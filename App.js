@@ -2,30 +2,40 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 
 /*
-<div id = "parent">
-    <div id = "child">
-        <h1> I am an h1 tag. </h1>
-        <h1> I am an h1 tag. </h1>
-    <div>
-<div>
-
-
+AppLayout
+    Header
+        - Logo
+        - Nav Items
+    Body 
+        - Search Component
+        - ReataurantContainer
+        - Restaurant Cards
+    Footer
+        - Copyright
+        - Social media items 
 */
 
+const Header = () => (
+    <div className="header">
+        <div className="logo-container">
+            <img className="logo" src="/images/FlavorFusionLogo.png" alt="Flavor Fusion Logo"></img>
+        </div>
+        <div className="nav-items">
+            <ul>
+                <li>Home</li>
+                <li>About Us</li>
+                <li>Contact Us</li>
+                <li>Cart</li>
+            </ul>
+        </div>
+    </div>
+)
 
-const elements = React.createElement("div", {id:"parent"} , 
-    React.createElement("div", {id:"child"} , 
-        [React.createElement("h1", {} , ["I am Deepak J Shukla ", "Djs","Love"]) , React.createElement("h2", {} , "I am an h2 tag.")]
-    )
-);
-
-console.log("heading = ",elements);
-console.log(elements.$$typeof);
-
-function abc(){}
-
+const AppLayout = () => (
+    <div>
+        <Header/>
+    </div>
+)
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-console.log("root = ",root);
-
-console.log("root.render(heading); = ",root.render(elements));
+root.render(<AppLayout/>);
