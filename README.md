@@ -18,3 +18,18 @@
 - HTTPs
 - Tree Shaking - remove unused code 
 - Different dev and prod build bundles
+
+# FlavorFusion App Layout:
+/*
+AppLayout
+    Header
+        - Logo
+        - Nav Items
+    Body 
+        - Search Component
+        - ReataurantContainer
+        - Restaurant Cards
+    Footer
+        - Copyright
+        - Social media items 
+*/
