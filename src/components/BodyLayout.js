@@ -1,62 +1,66 @@
 import RestaurantCard  from "./RestaurantCard.js"
-import { restaurantList } from "../utils/constants.js"
-import { useState } from "../../node_modules/react";
+import { useState, useEffect } from "../../node_modules/react";
+import ShimmerUI from "./ShimmerUI.js";
 
 const BodyLayout = () => {
-    console.log(useState(
-        [
-            {
-                data: {
-                  id: "73011",
-                  name: "KFC",
-                  cloudinaryImageId: "bdcd233971b7c81bf77e1fa4471280eb",
-                  cuisines: ["American", "Snacks", "Biryani"],
-                  costForTwo: 30000,
-                  deliveryTime: 31,
-                  avgRating: "3.8",
-                }
-            },
-            {
-                data: {
-                  id: "73012",
-                  name: "Dominos",
-                  cloudinaryImageId: "bdcd233971b7c81bf77e1fa4471280eb",
-                  cuisines: ["American", "Snacks", "Biryani"],
-                  costForTwo: 30000,
-                  deliveryTime: 31,
-                  avgRating: "4.5",
-                }
-            },
-            {
-                data: {
-                  id: "73013",
-                  name: "MCD",
-                  cloudinaryImageId: "bdcd233971b7c81bf77e1fa4471280eb",
-                  cuisines: ["American", "Snacks", "Biryani"],
-                  costForTwo: 30000,
-                  deliveryTime: 31,
-                  avgRating: "4",
-                }
-            }
-        ]
-    ))
-    const [listOfRestaurants,setListOfRestaurants] = useState(restaurantList)
-    console.log("setListOfRestaurants = ",setListOfRestaurants);
+    
+    const [listOfRestaurants,setListOfRestaurants] = useState([])
+    const [filteredRestaurants,setFilteredRestaurants] = useState([])
+    const [searchInput,setsearchInput] = useState("");
+    useEffect(async ()=>{
+        console.log("useEffect called");
+        const response = await fetch("https://www.swiggy.com/dapi/restaurants/list/v5?lat=19.07480&lng=72.88560&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING");
+        const json = await response.json()
+        const restaurants = json?.data?.cards[4].card.card.gridElements.infoWithStyle.restaurants;
+        console.log("restaurants = ",json?.data?.cards[4].card.card.gridElements.infoWithStyle.restaurants);
+        setListOfRestaurants(restaurants);
+        setFilteredRestaurants(restaurants);
+    },[])
+
+    if(!listOfRestaurants.length){
+        return(
+            <ShimmerUI></ShimmerUI>
+        )
+    }
+
+    const searchHandler = () =>{
+        console.log("searchInput = ",searchInput);
+        const filteredRestaurantList = listOfRestaurants.filter((restaurant)=>
+         restaurant.info.name.toLowerCase().includes(searchInput.toLowerCase()));
+        console.log("filteredRestaurantList = ",filteredRestaurantList);
+        setFilteredRestaurants(filteredRestaurantList);
+    }
+
+    const inputChangehandler = (e) =>{
+        console.log("inputChangehandler = ",e.target.value);
+        setsearchInput(e.target.value);
+    }
+
     
     return (
     <div className="body">
         <div className="filter">
-            <button className="filter-btn" onClick={()=>{
-                console.log("filter top res triggerd");
-                const topRatedRestaurants = listOfRestaurants.filter((restaurant)=>restaurant.data.avgRating >=4);
-                console.log("topRatedRestaurants = ",topRatedRestaurants);
-                setListOfRestaurants(topRatedRestaurants);
-            }} >Top Rated Restaurants</button>
+            <div className="search-box">
+                <input type="text" placeholder="Input your search query." className="search-field" value={searchInput}
+                    onChange={inputChangehandler}
+                />
+
+                <button className="btn-search" onClick={searchHandler}>Search</button>
+
+                <button className="filter-btn" onClick={()=>{
+                        console.log("filter top res triggerd");
+                        const topRatedRestaurants = listOfRestaurants.filter((restaurant)=>restaurant.info.avgRating >=4);
+                        console.log("topRatedRestaurants = ",topRatedRestaurants);
+                        setFilteredRestaurants(topRatedRestaurants);
+                    }} >Top Rated Restaurants
+                </button>
+            </div>
+            
         </div>
         <div className="restaurant-container">
             {
-                listOfRestaurants.map((restaurant) => 
-                (<RestaurantCard key={restaurant.data.id} restaurantData = {restaurant}/>))
+                filteredRestaurants.map((restaurant) => 
+                (<RestaurantCard key={restaurant.info.id} restaurantData = {restaurant.info}/>))
             }
         </div>
     </div>
